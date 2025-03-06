@@ -277,8 +277,8 @@ public class BottleController : MonoBehaviour
             Debug.LogWarning("BottleCollider not assigned - using GetComponent");
         }
         rb.mass = bottleMass;
-        rb.drag = airResistance;
-        rb.angularDrag = 0.02f; 
+        rb.linearDamping = airResistance;
+        rb.angularDamping = 0.02f; 
 
         defaultMaterial.friction = 0.4f; 
 
@@ -338,20 +338,20 @@ public class BottleController : MonoBehaviour
 
         if (bounceCount > 0)
         {
-            Vector2 newVelocity = rb.velocity;
+            Vector2 newVelocity = rb.linearVelocity;
             newVelocity.y *= Mathf.Pow(0.5f, bounceCount);
-            rb.velocity = newVelocity;
+            rb.linearVelocity = newVelocity;
         }
 
-        rb.velocity *= velocityDamping;
+        rb.linearVelocity *= velocityDamping;
 
-        rb.velocity = Vector2.ClampMagnitude(rb.velocity, maxVerticalBounce);
+        rb.linearVelocity = Vector2.ClampMagnitude(rb.linearVelocity, maxVerticalBounce);
 
         bounceCount++;
 
         if (bounceCount >= maxBounces)
         {
-            rb.velocity *= 0.3f;
+            rb.linearVelocity *= 0.3f;
             rb.angularVelocity *= 0.5f;
             HandleLoss("Too many bounces");
         }
@@ -379,7 +379,7 @@ public class BottleController : MonoBehaviour
             float squashY = Mathf.Lerp(1f, 0.9f, Mathf.Sin(t * Mathf.PI)); 
             float stretchX = Mathf.Lerp(1f, 1.1f, Mathf.Sin(t * Mathf.PI)); 
 
-            // Применяем новый масштаб
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             transform.localScale = new Vector3(
                 originalScale.x * stretchX,
                 originalScale.y * squashY,
@@ -585,7 +585,7 @@ public class BottleController : MonoBehaviour
                 Camera.main.GetComponent<Animator>().SetBool("Sky", true);
             }
 
-            float swipeDistance = ((Vector2)Input.mousePosition - startTouchPosition).magnitude; // Изменено
+            float swipeDistance = ((Vector2)Input.mousePosition - startTouchPosition).magnitude; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             if (swipeDistance > 100)
                 rotateStreakTime += 0.2f;
 
@@ -705,7 +705,7 @@ public class BottleController : MonoBehaviour
             swipePower
         ) * verticalJumpMultiplier;
 
-        rb.velocity = new Vector2(0, verticalForce);
+        rb.linearVelocity = new Vector2(0, verticalForce);
 
         _currentRotationSpeed += 80f; 
         rb.AddTorque(_currentRotationSpeed, ForceMode2D.Impulse);
@@ -756,7 +756,7 @@ public class BottleController : MonoBehaviour
             win = false;
             gameOver = true;
             canRotate = false;
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
 
             youWinPopUp.SetActive(true);
             youWinPopUp.GetComponent<TextMeshProUGUI>().text = "you lose!";
@@ -770,7 +770,7 @@ public class BottleController : MonoBehaviour
     {
         rb.angularVelocity = 0f;
         gameOver = true;
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0f;
         yield return StartCoroutine(SmoothAlignToAngle(0f, 0.3f));
 
@@ -869,18 +869,18 @@ public class BottleController : MonoBehaviour
         float angle = Mathf.Abs(transform.eulerAngles.z % 360);
         return (angle <= 45f || angle >= 315f) &&
                rb.angularVelocity < 45f &&
-               rb.velocity.magnitude < 1f;
+               rb.linearVelocity.magnitude < 1f;
     }
     private bool IsPerfectlyUpright()
     {
         float angle = Mathf.Abs(transform.eulerAngles.z % 360);
         return (angle <= 1f || angle >= 359f) &&
                rb.angularVelocity < 5f &&
-               rb.velocity.magnitude < 0.1f;
+               rb.linearVelocity.magnitude < 0.1f;
     }
     private void LockBottlePosition()
     {
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0f;
         rb.isKinematic = true;
         transform.rotation = Quaternion.Euler(0, 0, 0);
@@ -901,7 +901,7 @@ public class BottleController : MonoBehaviour
         float checkTimer = 0f;
         while (checkTimer < victoryCheckDuration && !gameOver && !inTriggerZone)
         {
-            if (IsUpright() && rb.velocity.magnitude < 0.1f)
+            if (IsUpright() && rb.linearVelocity.magnitude < 0.1f)
             {
                 HandleVictory();
                 yield break;
@@ -926,7 +926,7 @@ public class BottleController : MonoBehaviour
         float checkTimer = 0f;
         while (inTriggerZone && checkTimer < victoryCheckDuration && !gameOver)
         {
-            if (IsUpright() && rb.velocity.magnitude < 0.3f)
+            if (IsUpright() && rb.linearVelocity.magnitude < 0.3f)
             {
                 HandleVictory();
                 yield break;
@@ -939,7 +939,7 @@ public class BottleController : MonoBehaviour
     {
         float angle = transform.eulerAngles.z % 360;
         bool angleCheck = angle <= 45f || angle >= 315f;
-        bool physicsCheck = rb.velocity.magnitude < 0.5f && Mathf.Abs(rb.angularVelocity) < 15f;
+        bool physicsCheck = rb.linearVelocity.magnitude < 0.5f && Mathf.Abs(rb.angularVelocity) < 15f;
         return angleCheck && physicsCheck;
     }
     private void HandleVictory()
@@ -977,7 +977,7 @@ public class BottleController : MonoBehaviour
     private void FixedUpdate()
     {
 
-        rb.velocity = new Vector2(0, rb.velocity.y);
+        rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
       
         if (isTriggerAfterLoss)
         {
@@ -989,14 +989,14 @@ public class BottleController : MonoBehaviour
 
         if (!throwBegan || gameOver) return;
 
-        rb.drag = isGrounded ?
-            Mathf.Lerp(0.5f, 2f, rb.velocity.magnitude / maxVerticalBounce) :
+        rb.linearDamping = isGrounded ?
+            Mathf.Lerp(0.5f, 2f, rb.linearVelocity.magnitude / maxVerticalBounce) :
             airResistance;
 
-        Vector2 clampedVelocity = rb.velocity;
+        Vector2 clampedVelocity = rb.linearVelocity;
         clampedVelocity.x = Mathf.Clamp(clampedVelocity.x, -maxHorizontalOffset * 2, maxHorizontalOffset * 2);
         clampedVelocity.y = Mathf.Min(clampedVelocity.y, maxVerticalBounce);
-        rb.velocity = clampedVelocity;
+        rb.linearVelocity = clampedVelocity;
 
         if (Mathf.Abs(rb.angularVelocity) > targetRotationSpeed * 0.8f)
         {
@@ -1037,7 +1037,7 @@ public class BottleController : MonoBehaviour
         win = false;
         gameOver = true;
         canRotate = false;
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
 
         if (bottleCollider != null)
         {
@@ -1055,7 +1055,7 @@ public class BottleController : MonoBehaviour
     {
         bool isSideways = CheckSidewaysDefeat();
         bool isBounceLimit = bounceCount >= maxBounces;
-        bool isVelocityTooHigh = rb.velocity.magnitude > 5f;
+        bool isVelocityTooHigh = rb.linearVelocity.magnitude > 5f;
 
         return isSideways || isBounceLimit || isVelocityTooHigh;
     }
@@ -1112,7 +1112,7 @@ public class BottleController : MonoBehaviour
                         Debug.Log($"Bottle throw params: Chance={currentChance}%, " +
                                  $"Multiplier={currentMultiplier}x, RTP={currentChance * currentMultiplier}%");
 
-                        // Рассчитываем текущий выигрыш
+                        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
                         currentCash = Mathf.Round(bet * targetMultiplier * 100) / 100;
                         currentCashText.text = currentCash.ToString("F2");
             */
@@ -1120,7 +1120,7 @@ public class BottleController : MonoBehaviour
             scoreText.gameObject.SetActive(true);
 
             transform.position = startPos.position;
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
             rb.angularVelocity = 0f;
             rotationSpeed = 0;
             bounceCount = 0;
@@ -1221,7 +1221,7 @@ public class BottleController : MonoBehaviour
         float newRotationSpeed = Mathf.Max(500f, 700f - (swipeDistance / 1500f)) * initialRotationBoost;
         rotationSpeed = Mathf.Abs(newRotationSpeed * 2);
 
-        rb.velocity = new Vector2(0f, newThrowForce * airThrowForceMultiplier);
+        rb.linearVelocity = new Vector2(0f, newThrowForce * airThrowForceMultiplier);
         StartCoroutine(ResetRotationBoost());
 
         canRotate = true;
@@ -1416,7 +1416,7 @@ public class BottleController : MonoBehaviour
         timer = 0;
         winTimer = 0;
         rotationSpeed = 0;
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
         rb.sharedMaterial = defaultMaterial;
 
         transform.rotation = Quaternion.identity;
@@ -1429,7 +1429,7 @@ public class BottleController : MonoBehaviour
         scoreText.gameObject.SetActive(false);
 
         bounceCount = 0;
-        rb.drag = airResistance;
+        rb.linearDamping = airResistance;
         hasExitedZone = false;
         win = false;
 
@@ -1458,7 +1458,7 @@ public class BottleController : MonoBehaviour
     {
         float duration = 0.3f;
         float elapsed = 0f;
-        Vector2 startVelocity = rb.velocity;
+        Vector2 startVelocity = rb.linearVelocity;
         float startAngular = rb.angularVelocity;
         Quaternion startRotation = transform.rotation;
         Quaternion targetRotation = Quaternion.Euler(0, 0, targetAngle);
@@ -1468,14 +1468,14 @@ public class BottleController : MonoBehaviour
             elapsed += Time.deltaTime;
             float t = elapsed / duration;
 
-            rb.velocity = Vector2.Lerp(startVelocity, Vector2.zero, t);
+            rb.linearVelocity = Vector2.Lerp(startVelocity, Vector2.zero, t);
             rb.angularVelocity = Mathf.Lerp(startAngular, 0f, t);
             transform.rotation = Quaternion.Lerp(startRotation, targetRotation, t);
 
             yield return null;
         }
 
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0f;
         transform.rotation = targetRotation;
         gameOver = true;
@@ -1552,7 +1552,7 @@ public class BottleController : MonoBehaviour
         float currentAngle = NormalizeAngle(transform.localEulerAngles.z);
         bool isUpright = currentAngle <= 35f || currentAngle >= 325f; 
 
-        bool isVelocityLow = rb.velocity.magnitude < 0.8f; 
+        bool isVelocityLow = rb.linearVelocity.magnitude < 0.8f; 
         bool isRotationSlow = Mathf.Abs(rb.angularVelocity) < 60f; 
 
         return isUpright && isVelocityLow && isRotationSlow;
@@ -1583,7 +1583,7 @@ public class BottleController : MonoBehaviour
         float currentAngle = NormalizeAngle(transform.localEulerAngles.z);
         bool isUpright = currentAngle <= 35f || currentAngle >= 325f; 
 
-        bool isVelocityLow = rb.velocity.magnitude < 0.5f; 
+        bool isVelocityLow = rb.linearVelocity.magnitude < 0.5f; 
         bool isRotationSlow = Mathf.Abs(rb.angularVelocity) < 30f; 
 
         if (isUpright && isVelocityLow && isRotationSlow)
@@ -1609,7 +1609,7 @@ public class BottleController : MonoBehaviour
     {
         if (!IsWithinAngleThreshold()) return false;
 
-        bool isVelocityLow = rb.velocity.magnitude < 0.3f;
+        bool isVelocityLow = rb.linearVelocity.magnitude < 0.3f;
         bool isRotationSlow = Mathf.Abs(rb.angularVelocity) < 15f;
 
         return isVelocityLow && isRotationSlow;
@@ -1668,7 +1668,7 @@ public class BottleController : MonoBehaviour
         winChanceManager.AdjustChanceAfterThrow(true, bet);
  
         currentCash = bet * currentMultiplier;
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0f;
 
         StartCoroutine(SmoothAlignToAngle(0f, 0.5f));

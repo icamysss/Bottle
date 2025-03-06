@@ -4,10 +4,21 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+
+// Мой телеграмм @icamysss . Проблема была в том, что бутылка пролетала насквозь верхний коллайдер, 
+// А пропадала она потому что когда падала, ложилась на него сверху и лежала там. 
+
+// Также можно добавить триггер выше скайколлайдера, если пролетел коллайдер, то в триггере поймать 
+// Добавлен метод ограничения скорости rigidBody 
+// На коллайдеры лучше добавить rigidBody, указать static , изменить определение коллизий rigidBody
+
+
+
 public class BottleController : MonoBehaviour
 {
     [Header("Settings")]
     [SerializeField] private float throwForce;
+    [SerializeField] private float maxThrowSpeed = 20f;                 // НОВАЯ ПЕРЕМЕННАЯ 
     [SerializeField] private float rotationSpeed;
     [SerializeField] private bool throwBegan;
     [SerializeField] private Transform startPos;
@@ -264,6 +275,19 @@ public class BottleController : MonoBehaviour
     private float _lastGroundTouchTime;
     private Coroutine _lossCheckCoroutine;
     private bool _isCheckingLoss;
+    
+    
+    // ------------------- Ограничение скорости ---------- 
+    private void ClampBottleVelocity()
+    {
+        if (rb.linearVelocity.magnitude > maxThrowSpeed)
+        {
+            rb.linearVelocity = Vector2.ClampMagnitude(rb.linearVelocity, maxThrowSpeed);
+        }
+    }
+    // ------------------------------------------------------
+    
+    
     private void Start()
     {
 
@@ -512,6 +536,7 @@ public class BottleController : MonoBehaviour
 
     private void Update()
     {
+
         if (!isSpeedRamping && Mathf.Abs(rb.angularVelocity) > targetRotationSpeed)
         {
             rb.angularVelocity = Mathf.Sign(rb.angularVelocity) * targetRotationSpeed;
@@ -713,6 +738,10 @@ public class BottleController : MonoBehaviour
         bounceCount = 0;
         jumpsCount++;
         AddMultiplier(true);
+        
+        // -------------
+        ClampBottleVelocity();
+        // -------------
     }
 
 
@@ -976,7 +1005,9 @@ public class BottleController : MonoBehaviour
 
     private void FixedUpdate()
     {
-
+        // -------------
+        ClampBottleVelocity();
+        // -------------
         rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
       
         if (isTriggerAfterLoss)
@@ -1157,6 +1188,9 @@ public class BottleController : MonoBehaviour
 
         rb.AddForce(new Vector2(0, verticalForce), ForceMode2D.Impulse);
 
+        // -------------
+        ClampBottleVelocity();
+        // -------------
         _currentRotationSpeed = Mathf.Lerp(minTorque, maxTorque, normalizedSwipe)
                               * _initialTorqueDirection
                               * 1.3f; 

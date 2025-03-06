@@ -3479,7 +3479,6 @@ GameObject:
   - component: {fileID: 1699654203}
   - component: {fileID: 1699654206}
   - component: {fileID: 1699654205}
-  - component: {fileID: 1699654204}
   m_Layer: 5
   m_Name: visible
   m_TagString: Untagged
@@ -3506,21 +3505,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -94}
   m_SizeDelta: {x: 500, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1699654204
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1699654202}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f582fe57a8944abaa3b906167fc775c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 2719014836942815161}
-  pos: {fileID: 0}
-  active: {fileID: 0}
 --- !u!114 &1699654205
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4403,6 +4387,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   throwForce: 45
+  maxThrowSpeed: 20
   rotationSpeed: 45
   throwBegan: 0
   startPos: {fileID: 1859056698}

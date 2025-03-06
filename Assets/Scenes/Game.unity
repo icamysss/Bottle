@@ -3812,8 +3812,8 @@ Transform:
   m_GameObject: {fileID: 1715198511}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -369.0458, y: -1702.131, z: 5.297559}
-  m_LocalScale: {x: 3.2360778, y: 2.7022002, z: 1}
+  m_LocalPosition: {x: -369.0458, y: -1646.175, z: 5.297559}
+  m_LocalScale: {x: 3.2360778, y: 19.971897, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 978904356}
@@ -4387,7 +4387,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   throwForce: 45
-  maxThrowSpeed: 20
+  maxThrowSpeed: 10
+  maxYPosition: 50
+  minYPosition: -10
+  positionLerpSpeed: 5
   rotationSpeed: 45
   throwBegan: 0
   startPos: {fileID: 1859056698}
@@ -4799,7 +4802,7 @@ Rigidbody2D:
   m_Interpolate: 2
   m_SleepingMode: 1
   m_CollisionDetection: 1
-  m_Constraints: 0
+  m_Constraints: 1
 --- !u!95 &5320080124856228425
 Animator:
   serializedVersion: 7

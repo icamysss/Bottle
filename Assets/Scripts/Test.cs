@@ -15,4 +15,12 @@ namespace DefaultNamespace
             active.text = target.gameObject.activeInHierarchy.ToString();
         }
     }
+    
+    
+    // 1.98   21.67  0.06  - улетела сюда    осталась видимой
+    // 1.52   21.62  0.06 
+    
+    
+    
+    //         - 3.55      - стартовая
 }

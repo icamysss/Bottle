@@ -1,9 +1,9 @@
 const cacheName = "DefaultCompany-BottleGame-1.0";
 const contentToCache = [
     "Build/docs.loader.js",
-    "Build/docs.framework.js.unityweb",
-    "Build/docs.data.unityweb",
-    "Build/docs.wasm.unityweb",
+    "Build/docs.framework.js",
+    "Build/docs.data",
+    "Build/docs.wasm",
     "TemplateData/style.css"
 
 ];
